@@ -1,0 +1,80 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "com.jamesfchen.binder"
+    compileSdk = 32
+
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 32
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+        externalNativeBuild {
+            cmake {
+                arguments += listOf(
+                    "-DANDROID_ARM_NEON=TRUE",
+                    "-DANDROID_TOOLCHAIN=clang",
+                    "-DANDROID_STL=c++_shared"
+                )
+                cppFlags += listOf(
+                    "-s",/*去除so lib 的符号表（libguard shrink之后的size2139k -->283k 7倍）*/
+                    "-fvisibility=hidden", "-ffunction-sections", "-fdata-sections", "-std=c++14"
+                )
+//                cppFlags "-std=c++14"
+//                        , '-fno-rtti', '"-fno-exceptions"'
+                cFlags += listOf("-D__STDC_FORMAT_MACROS")
+//                cppFlags "-std=gnu++11"
+//                targets "hawks","hotfix"
+                abiFilters += listOf(
+                    //输出制定三种abi体系结构下的so库
+                    "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+                )
+            }
+        }
+    }
+    ndkVersion = '25.0.8775105'
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("CMakeLists.txt")
+            //path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        prefabPublishing = true
+    }
+//
+    prefab {
+        create("b") {
+            headers = "src/main/jni/include"
+        }
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("com.google.android.material:material:1.4.0")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    api( ":projDemo:common")
+}

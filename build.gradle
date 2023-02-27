@@ -1,0 +1,28 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+def allStub = []
+allprojects {
+    if (it.name.contains("Stub")){
+        allStub.add(it.path)
+    }
+
+}
+//gradle.addProjectEvaluationListener(new ProjectEvaluationListener() {
+//    @Override
+//    void beforeEvaluate(Project project) {
+//    }
+//
+//    @Override
+//    void afterEvaluate(Project project, ProjectState projectState) {
+//        if (project.name == 'pluginCoreX') {
+//            project.dependencies {
+//                for (def stub : allStub) {
+//                    project.dependencies.add("compileOnly",gradle.rootProject.findProject(stub))
+//                }
+//            }
+//        }
+//    }
+//})
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

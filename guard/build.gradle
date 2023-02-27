@@ -1,0 +1,58 @@
+plugins{
+    id 'io.github.jamesfchen.android-lib-plugin'
+    id 'org.jetbrains.kotlin.android'
+}
+project.plugins.apply('kotlin-kapt')
+android {
+    defaultConfig {
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_TOOLCHAIN=clang","-DANDROID_STL=c++_shared"
+                cppFlags '-s'/*去除so lib 的符号表（libguard shrink之后的size2139k -->283k 7倍）*/  \
+                            , "-fvisibility=hidden", "-ffunction-sections", "-fdata-sections","-std=c++14"
+//                cppFlags "-std=c++14"
+//                        , '-fno-rtti', '"-fno-exceptions"'
+                cFlags "-D__STDC_FORMAT_MACROS"
+//                cppFlags "-std=gnu++11"
+//                targets "hawks","hotfix"
+                abiFilters "arm64-v8a", "armeabi-v7a"
+            }
+        }
+    }
+    buildTypes {
+        debug {
+        }
+        release {
+            externalNativeBuild {
+                cmake {
+                    //https://zhuanlan.zhihu.com/p/72475595
+                    cppFlags '-s'/*去除so lib 的符号表（libguard shrink之后的size2139k -->283k 7倍）*/  \
+                            , "-fvisibility=hidden", "-ffunction-sections", "-fdata-sections"
+                }
+            }
+
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+            //path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+//    packagingOptions {
+//        doNotStrip "**.so"
+//        doNotStrip  "**/debug/obj/**/*.so"
+//    }
+    buildFeatures {
+        prefab true
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    api 'io.github.jamesfchen:common:1.0.0'
+    api 'com.facebook.soloader:soloader:0.10.1+'
+    api 'com.facebook.fbjni:fbjni:0.2.2'
+    compileOnly "io.github.jamesfchen:myStub:1.0.0"
+}

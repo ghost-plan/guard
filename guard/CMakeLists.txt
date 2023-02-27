@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_VERBOSE_MAKEFILE on)
+add_definitions(-DENABLE_ANDROID_LOG)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}   -Wno-format -Wno-sign-compare -Wno-unused-parameter -DHAVE_CONFIG_H")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}   -Wno-format -Wno-sign-compare -Wno-unused-parameter -DHAVE_CONFIG_H -fno-stack-protector  -Wstrict-overflow=5 -fvisibility=hidden -Wall -Wextra -Wunuse")
+#set(CMAKE_LINK_DEF_FILE_FLAG ${CMAKE_LINK_DEF_FILE_FLAG} -Wl,-Bsymbolic -Wl,--exclude-libs,ALL)
+
+
+add_subdirectory(src/main/cpp/guard)
+add_subdirectory(src/main/cpp/dynamic_so)
